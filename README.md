@@ -161,6 +161,9 @@ Note that there is also `FileTileProvider()`, which you can use to load tiles fr
 - [flutter_map_marker_cluster](https://github.com/lpongetti/flutter_map_marker_cluster): Provides Beautiful Animated Marker Clustering functionality
 - [user_location](https://github.com/igaurab/user_location_plugin): A plugin to handle and plot the current user location in FlutterMap
 
+## Web Workaround / Known issues
+- If you want to stack layers over the tile layer, you need to set the opacity of the tile layer to 0.99 (This will force flutter to render the image on the canvas instead of a img html tag) (see [flutter issue](https://github.com/flutter/flutter/issues/44845))
+- For any layer which uses a custompainter and a paint with BlendMode, you need to set the BlendMode to default if you are on web (otherwise only the last canvas draw will be rendered)
 
 ## Roadmap
 
