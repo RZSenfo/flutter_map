@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/src/map/map.dart';
@@ -105,7 +106,7 @@ class PolylinePainter extends CustomPainter {
       ..strokeWidth = polylineOpt.strokeWidth
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..blendMode = BlendMode.src;
+      ..blendMode = kIsWeb ? BlendMode.srcOver : BlendMode.src;
 
     if (polylineOpt.gradientColors == null) {
       paint.color = polylineOpt.color;
@@ -120,7 +121,7 @@ class PolylinePainter extends CustomPainter {
       ..strokeWidth = polylineOpt.strokeWidth
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..blendMode = BlendMode.dstOut;
+      ..blendMode = kIsWeb ? BlendMode.srcOver : BlendMode.dstOut;
 
     final borderPaint = polylineOpt.borderStrokeWidth > 0.0
         ? (Paint()
@@ -129,7 +130,7 @@ class PolylinePainter extends CustomPainter {
               polylineOpt.strokeWidth + polylineOpt.borderStrokeWidth
           ..strokeCap = StrokeCap.round
           ..strokeJoin = StrokeJoin.round
-          ..blendMode = BlendMode.src)
+          ..blendMode = kIsWeb ? BlendMode.srcOver : BlendMode.src)
         : null;
     var radius = paint.strokeWidth / 2;
     var borderRadius = borderPaint?.strokeWidth ?? 0 / 2;
