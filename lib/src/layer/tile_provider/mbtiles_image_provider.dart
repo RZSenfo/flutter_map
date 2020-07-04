@@ -14,19 +14,31 @@ class MBTilesImageProvider extends TileProvider {
   final String asset;
   final File mbtilesFile;
 
+  /// optional ByteArray representation of an image
+  /// to be used in Codec instead of throwing errors
+  final Uint8List fallbackBytes;
+
   Future<Database> database;
   Database _loadedDb;
   bool isDisposed = false;
 
-  MBTilesImageProvider._({this.asset, this.mbtilesFile}) {
+  MBTilesImageProvider._({this.asset, this.mbtilesFile, this.fallbackBytes}) {
     database = _loadMBTilesDatabase();
   }
 
-  factory MBTilesImageProvider.fromAsset(String asset) =>
-      MBTilesImageProvider._(asset: asset);
+  factory MBTilesImageProvider.fromAsset(String asset,
+          {Uint8List fallbackBytes}) =>
+      MBTilesImageProvider._(
+        asset: asset,
+        fallbackBytes: fallbackBytes,
+      );
 
-  factory MBTilesImageProvider.fromFile(File mbtilesFile) =>
-      MBTilesImageProvider._(mbtilesFile: mbtilesFile);
+  factory MBTilesImageProvider.fromFile(File mbtilesFile,
+          {Uint8List fallbackBytes}) =>
+      MBTilesImageProvider._(
+        mbtilesFile: mbtilesFile,
+        fallbackBytes: fallbackBytes,
+      );
 
   Future<Database> _loadMBTilesDatabase() async {
     if (_loadedDb == null) {
@@ -83,8 +95,9 @@ class MBTilesImageProvider extends TileProvider {
 class MBTileImage extends ImageProvider<MBTileImage> {
   final Future<Database> database;
   final Coords<int> coords;
+  final Uint8List fallbackBytes;
 
-  MBTileImage(this.database, this.coords);
+  MBTileImage(this.database, this.coords, {this.fallbackBytes});
 
   @override
   ImageStreamCompleter load(MBTileImage key, decode) {
@@ -100,16 +113,24 @@ class MBTileImage extends ImageProvider<MBTileImage> {
   Future<Codec> _loadAsync(MBTileImage key) async {
     assert(key == this);
 
-    final db = await key.database;
-    List<Map> result = await db.rawQuery('select tile_data from tiles '
-        'where zoom_level = ${coords.z} AND '
-        'tile_column = ${coords.x} AND '
-        'tile_row = ${coords.y} limit 1');
-    final Uint8List bytes =
-        result.isNotEmpty ? result.first['tile_data'] : null;
+    Uint8List bytes;
+    try {
+      final db = await key.database;
+      List<Map> result = await db.rawQuery('select tile_data from tiles '
+          'where zoom_level = ${coords.z} AND '
+          'tile_column = ${coords.x} AND '
+          'tile_row = ${coords.y} limit 1');
+      bytes = result != null && result.isNotEmpty
+          ? result.first['tile_data']
+          : null;
+      // ignore: empty_catches
+    } catch (e) {}
 
     if (bytes == null) {
-      return Future<Codec>.error('Failed to load tile for coords: $coords');
+      if (fallbackBytes == null) {
+        return Future<Codec>.error('Failed to load tile for coords: $coords');
+      }
+      bytes = fallbackBytes;
     }
     return await PaintingBinding.instance.instantiateImageCodec(bytes);
   }
