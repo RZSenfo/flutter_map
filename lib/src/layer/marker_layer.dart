@@ -6,7 +6,7 @@ import 'package:latlong/latlong.dart';
 
 class MarkerLayerOptions extends LayerOptions {
   final List<Marker> markers;
-  MarkerLayerOptions({this.markers = const [], rebuild})
+  MarkerLayerOptions({this.markers = const [], Stream<Null> rebuild})
       : super(rebuild: rebuild);
 }
 

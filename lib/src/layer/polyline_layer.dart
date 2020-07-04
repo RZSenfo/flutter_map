@@ -10,7 +10,7 @@ import 'package:latlong/latlong.dart';
 class PolylineLayerOptions extends LayerOptions {
   final List<Polyline> polylines;
 
-  PolylineLayerOptions({this.polylines = const [], rebuild})
+  PolylineLayerOptions({this.polylines = const [], Stream<Null> rebuild})
       : super(rebuild: rebuild);
 }
 

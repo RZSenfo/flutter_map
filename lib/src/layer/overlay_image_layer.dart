@@ -8,7 +8,8 @@ import 'package:flutter_map/src/map/map.dart';
 class OverlayImageLayerOptions extends LayerOptions {
   final List<OverlayImage> overlayImages;
 
-  OverlayImageLayerOptions({this.overlayImages = const [], rebuild})
+  OverlayImageLayerOptions(
+      {this.overlayImages = const [], Stream<Null> rebuild})
       : super(rebuild: rebuild);
 }
 

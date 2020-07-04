@@ -11,9 +11,11 @@ class PolygonLayerOptions extends LayerOptions {
   final bool polygonCulling;
 
   /// screen space culling of polygons based on bounding box
-  PolygonLayerOptions(
-      {this.polygons = const [], this.polygonCulling = false, rebuild})
-      : super(rebuild: rebuild);
+  PolygonLayerOptions({
+    this.polygons = const [],
+    this.polygonCulling = false,
+    Stream<Null> rebuild,
+  }) : super(rebuild: rebuild);
 }
 
 class Polygon {
